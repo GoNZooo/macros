@@ -1,7 +1,5 @@
-racket macros
+Racket macros
 =============
-
-Macros for racket:
 
 Folders
 -------
