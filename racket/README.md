@@ -13,3 +13,4 @@ Folders
 * s-and-giggles --- Explorations in largely unnecessary stuff made just for the hell of it.
   * py-style --- Python-style for-loop (***for n in ns ...***)
   * while.rkt --- C-style ***while*** loop, with contracts for condition, etc.
+  * time-traveler --- Exploration in persistent storage of variable values, allowing rewinds and tagged values.
