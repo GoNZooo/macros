@@ -2,7 +2,10 @@
 
 ;; The following is meant as an exploratory exercise in macros
 ;; and should be viewed (and/or) used as such.
-
+;;
+;; TODO:
+;;   2014-07-08 Rewrite this with syntax-parse
+;;
 (define-syntax (time-travel-init stx)
   (syntax-case stx ()
     [(func)
@@ -61,7 +64,6 @@
 
   (time-set! time-test 1337)
   (time-set! time-test 0)
-  (printf "~a~n" *time-travel-hash*)
   (time-rewind time-test 2) ; => 42
   (time-rewind time-test 1) ; => 1337
   (time-rewind time-test 0) ; => 0
@@ -69,6 +71,5 @@
 
   (time-set! time-test 322 solo)
   time-test ; => 322
-  (printf "~a~n" *time-travel-hash*)
   (time-rewind time-test solo) ; => 322
   )
