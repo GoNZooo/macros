@@ -1,4 +1,10 @@
-#lang racket
+#lang racket/base
+
+(require (for-syntax racket/base
+                     racket/syntax
+                     syntax/parse
+                     racket/list)
+         racket/list)
 
 ;; The following is meant as an exploratory exercise in macros
 ;; and should be viewed (and/or) used as such.
@@ -13,8 +19,8 @@
        #'(define hash-name (make-hash)))]))
 
 (define-syntax (time-set! stx)
-  (syntax-case stx ()
-    [(func object value)
+  (syntax-parse stx
+    [(func:id object:id value:expr)
      (with-syntax ([hash-name (datum->syntax #'func '*time-travel-hash*)]
                    [object-name (symbol->string (syntax-e #'object))])
        #'(begin
@@ -24,7 +30,7 @@
                             (hash-ref hash-name object-name '())))
            (set! object value)))]
     
-    [(func object value label)
+    [(func:id object:id value:expr label:id)
      (let ([objstring (symbol->string (syntax-e #'object))]
            [label (symbol->string (syntax-e #'label))])
        (with-syntax ([hash-name (datum->syntax #'func '*time-travel-hash*)]
@@ -34,25 +40,23 @@
              (set! object value))))]))
 
 (define-syntax (time-rewind stx)
-  (syntax-case stx ()
-    [(func object steps)
+  (syntax-parse stx
+    [(func:id object:id steps:integer)
      (with-syntax ([hash-name (datum->syntax #'func '*time-travel-hash*)]
                    [object-name (symbol->string (syntax-e #'object))])
-       (cond
-        [(number? (syntax-e #'steps))
-         #'(let ([time-list (hash-ref hash-name object-name)])
-             (cond
-              [(< steps 1) object]
-              [(<= steps (length time-list)) (list-ref time-list (sub1 steps))]
-              [else (last time-list)]))]
-        
-        [(symbol? (syntax-e #'steps))
-         (let ([objstring (symbol->string (syntax-e #'object))]
-               [label (symbol->string (syntax-e #'steps))])
-           (with-syntax ([object+label (format "~a//~a" objstring label)])
-             #'(hash-ref hash-name object+label)))]))]
-    
-    [(func object)
+       #'(let ([time-list (hash-ref hash-name object-name)])
+           (cond
+            [(< steps 1) object]
+            [(<= steps (length time-list)) (list-ref time-list (sub1 steps))]
+            [else (last time-list)])))]
+    [(tr:id object:id label:id)
+     (with-syntax ([hash-name (datum->syntax #'func '*time-travel-hash*)]
+                   [object-name (symbol->string (syntax-e #'object))])
+       (let ([objstring (symbol->string (syntax-e #'object))]
+             [label (symbol->string (syntax-e #'label))])
+         (with-syntax ([object+label (format "~a//~a" objstring label)])
+           #'(hash-ref hash-name object+label))))]
+    [(func:id object:id)
      (with-syntax ([hash-name (datum->syntax #'func '*time-travel-hash*)]
                    [object-name (symbol->string (syntax-e #'object))])
        #'(last (hash-ref hash-name object-name)))]))
