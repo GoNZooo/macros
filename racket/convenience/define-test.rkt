@@ -1,13 +1,12 @@
 #lang racket/base
 
-(provide define+test
-         +test)
+(provide define/tc)
 
 (require (for-syntax racket/base
                      racket/syntax
                      syntax/parse
-                     racket/contract))
-(require rackunit
+                     racket/contract)
+         rackunit
          racket/contract)
 
 ;;; Macro for defining with contract and tests at the same time
